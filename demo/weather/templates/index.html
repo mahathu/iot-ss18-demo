@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Weather App</title>
+
+	<style type="text/css">
+		html{
+			background-color: #2D2D2D;
+		}
+
+		body{
+			font-size: 1.2em;
+
+			height: 100vh;
+			box-sizing: border-box;
+			margin: 0 auto;
+			padding: 15px 40px;
+			max-width: 800px;
+			background-color: white;
+
+			font-family: sans-serif;
+			border-top: 6px solid;
+			/*{% if city %}*/
+				/*background: url('{{bg_url}}') no-repeat center center fixed;
+				background-size: cover;*/
+			/* {% elif error %}
+				background: red;
+			{% else %}
+				background: green;
+			{% endif %} */
+		}
+		body h1{
+			margin-bottom: .8em;
+		}
+		body p{
+			margin: .67em 0;
+			padding-left: 22px;
+		}
+		body small{
+			font-size: .7em;
+			vertical-align: top;
+			margin-left: 7px;
+		}
+
+		body.success{
+			border-color: green;
+		}
+
+		.external-info{
+			color: green;
+		}
+
+		body.error{
+			border-color: red;
+			color: red;
+		}
+
+		body.no-ip{
+			border-color: blue;
+		}
+
+		.ip-list-label{
+			margin-left: 15px;
+			font-size: .8em;
+		}
+		#map{
+			width: calc(100% - 44px);
+			margin: 15px auto 25px auto;
+			height: 540px;
+		}
+	</style>
+</head>
+<body class="{% if city %}success {% elif error %} error {% else %} no-ip {% endif %}">
+	{% if city %}
+		<h1>Information about {{ip}}:</h1>
+
+		<p>{{ip}} is located in <a class="external-info" href="https://www.google.de/maps/search/{{city}}+{{country}}">{{city}}, {{country}}</a> <small>retrieved from ip-api.com</small></p>		
+		<div id="map"></div>
+
+		<p>Current weather in {{city}}: <span class="external-info">{{temp}}°C</span> <small>retrieved from openweathermap.org</small></p>
+		<p>Local time: <span class="external-info">{{time}}</span> <small>retrieved from openweathermap.org</small></p>
+
+
+	{% elif error %}
+		<b>API ERROR:</b> {{error}}
+	
+
+	{% else %}
+		<h3>A list of sample IPs to try out:</h3>
+		<ul>
+		{% for entry in ips %}
+			<li><a href="/weather/{{entry.ip}}">{{entry.ip}}</a>{% if entry.location %}<span class="ip-list-label">({{entry.location}})</span>{% endif %}</li>
+		{% endfor %}
+		</ul>
+	{% endif %}
+
+	<script>
+      function initMap() {
+      	var mapContainer = document.getElementById('map');
+        var coords = {lat: {{lat}}, lng: {{lon}}};
+        var map = new google.maps.Map( mapContainer, {
+          zoom: 12,
+          center: coords
+        });
+        var marker = new google.maps.Marker({
+          position: coords,
+          map: map
+        });
+      }
+    </script>
+    <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCtFPYjNqtXOAr5luvYYlBlqLpDfscxKMs&callback=initMap"></script>
+</body>
+</html>
